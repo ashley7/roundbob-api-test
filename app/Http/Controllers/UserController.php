@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\User;
 
 class UserController extends Controller
 {
@@ -13,7 +14,15 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::all();
+        $data = [];
+        foreach($users as $user){
+            $result   = [];
+            $result[] = $user->name;
+            $result[] = $user->state;            
+            $data[]   = $result;      
+        } 
+        return response()->json($data);
     }
 
     /**
@@ -29,12 +38,20 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request  name, state
+     * @return \Illuminate\Http\Response success or fail
      */
     public function store(Request $request)
     {
-        echo "string";
+        $status = array();
+        $save_user = new User($request->all());
+        try {
+            $save_user->save();
+            $status[] = "User created successfully";
+        } catch (\Exception $e) {
+            $status[] = "Failed to create user";
+        }
+        return response()->json($status);
     }
 
     /**
